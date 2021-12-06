@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Juicetin22/tinyapp/issues"
   },
-  "homepage": "https://github.com/Juicetin22/tinyapp#readme"
+  "homepage": "https://github.com/Juicetin22/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
