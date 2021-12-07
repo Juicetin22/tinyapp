@@ -35,12 +35,24 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send("This path is not associated with any URL. Please make sure you have typed it in correctly!");
+  }
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  let shorten = generateRandomString();
+  console.log(urlDatabase); //to check the list prior to adding new URL
+  urlDatabase[shorten] = req.body.longURL;
+  console.log(urlDatabase); //to check whether new URL got added to list
+  res.redirect(`/urls/${shorten}`);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {
@@ -49,10 +61,10 @@ app.listen(PORT, () => {
 
 function generateRandomString() {
   let random = "";
-  let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   for (let i = 0; i < 6; i++) {
-    random += letters[Math.floor(Math.random() * letters.length)];
+    random += characters[Math.floor(Math.random() * characters.length)];
   }
   return random;
 }
