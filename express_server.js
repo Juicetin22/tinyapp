@@ -40,23 +40,33 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });*/
 
+//GET webpages //
+//list of URL page
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies.username };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
   res.render("urls_index", templateVars);
 });
 
+//new URL page
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies.username }
+  const templateVars = { user: users[req.cookies['user_id']] }
   res.render("urls_new", templateVars);
 });
 
+//specific URL page / edit URL page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies.username };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies['user_id']] };
   if (!urlDatabase[req.params.shortURL]) {
     res.send("This path is not associated with any URL. Please make sure you have typed it in correctly!");
     return;
   }
   res.render("urls_show", templateVars);
+});
+
+//registration page
+app.get('/register', (req, res) => {
+  const templateVars = { user: users[req.cookies.user_id] };
+  res.render('register', templateVars);
 });
 
 app.post("/urls/:shortURL", (req, res) => {
@@ -99,21 +109,18 @@ app.post("/logout", (req, res) => {
   res.redirect('/urls');
 });
 
-//registration page
-app.get('/register', (req, res) => {
-  const templateVars = { username: req.cookies.username };
-  res.render('register', templateVars);
-});
-
 app.post('/register', (req, res) => {
   const userID = generateRandomString();
   const userEmail = req.body.email;
   const userPassword = req.body.password;
+
   users[userID] = { 
     id: userID, 
     email: userEmail, 
-    password: userPassword };
-  console.log(users);
+    password: userPassword 
+  };
+  console.log(users); //check to see if user is added to list
+
   res.cookie('user_id', userID);
   res.redirect('/urls');
 });
