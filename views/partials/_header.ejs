@@ -16,10 +16,14 @@
         <button type="submit" class="btn btn-warning">Logout</button>
       </form> 
     <% } else { %> 
-      <form method="POST" action="/login">
-        <input type="text" name="username" placeholder="Username">
+      <form method="GET" action="/login">
         <button type="submit" class="btn btn-warning">Login</button>
       </form> 
+      <div style="margin-left: 0.5em;">
+        <form method="GET" action="/register">
+          <button type="submit" class="btn btn-warning">Register</button>
+        </form> 
+      </div>
     <% } %>
   </nav>
 </header>
