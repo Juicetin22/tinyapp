@@ -110,18 +110,29 @@ app.post("/logout", (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const userID = generateRandomString();
-  const userEmail = req.body.email;
-  const userPassword = req.body.password;
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
 
-  users[userID] = { 
-    id: userID, 
-    email: userEmail, 
-    password: userPassword 
+  if (req.body.email === "" || req.body.password === "") {
+    console.log(users); //check that no new user is added
+    throw '400 status code: Bad Request \n\nInvalid email or password';
+  }
+  for (let userID in users) { 
+    if (findUserEmail(userID) === req.body.email) {
+      console.log(users); //check that no new user is added
+      throw '400 status code: Bad Request \n\nEmail is already registered';
+    }
+  }
+
+  users[id] = { 
+    id, 
+    email,
+    password
   };
   console.log(users); //check to see if user is added to list
-
-  res.cookie('user_id', userID);
+  
+  res.cookie('user_id', id);
   res.redirect('/urls');
 });
 
@@ -139,3 +150,8 @@ function generateRandomString() {
   }
   return random;
 }
+
+const findUserEmail = (userID) => {
+  let email = users[userID]['email'];
+  return email;
+};
