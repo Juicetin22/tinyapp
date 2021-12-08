@@ -14,6 +14,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
+
 /*app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -89,6 +103,19 @@ app.post("/logout", (req, res) => {
 app.get('/register', (req, res) => {
   const templateVars = { username: req.cookies.username };
   res.render('register', templateVars);
+});
+
+app.post('/register', (req, res) => {
+  const userID = generateRandomString();
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
+  users[userID] = { 
+    id: userID, 
+    email: userEmail, 
+    password: userPassword };
+  console.log(users);
+  res.cookie('user_id', userID);
+  res.redirect('/urls');
 });
 
 //server listening port
