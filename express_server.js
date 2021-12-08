@@ -4,6 +4,7 @@ const PORT = 8080; // default port 8080
 
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const { reset } = require("nodemon");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -92,7 +93,8 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   
   if (!users[req.cookies.user_id]) {
-    throw "Cannot add new URLs when not logged in";
+    res.send("Cannot add new URLs when not logged in");
+    return;
   }
   
   console.log(req.body);  // Log the POST request body to the console
@@ -122,16 +124,17 @@ app.post("/login", (req, res) => {
       if (users[userID]['password'] === loginUserPassword) {
         res.cookie('user_id', userID);
         res.redirect('/urls');
+        return;
       } 
     }
   } 
-  throw '403 status code: Forbidden \n\nIncorrect email or password';
+  res.send('403 status code: Forbidden <br> <br> Incorrect email or password');
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
   res.redirect('/urls');
-  console.log(users);
+  console.log(users); //check if user is still in users object list
 });
 
 //register a new user
@@ -142,12 +145,14 @@ app.post('/register', (req, res) => {
 
   if (req.body.email === "" || req.body.password === "") {
     console.log(users); //check that no new user is added
-    throw '400 status code: Bad Request \n\nInvalid email or password';
+    res.send('400 status code: Bad Request <br> <br> Invalid email or password');
+    return;
   }
   for (let userID in users) { 
     if (findUserEmail(userID) === req.body.email) {
       console.log(users); //check that no new user is added
-      throw '400 status code: Bad Request \n\nEmail is already registered';
+      res.send('400 status code: Bad Request <br> <br> Email is already registered');
+      return;
     }
   }
 
