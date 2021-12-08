@@ -27,16 +27,17 @@ app.get("/hello", (req, res) => {
 });*/
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies.username };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { username: req.cookies.username }
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies.username };
   if (!urlDatabase[req.params.shortURL]) {
     res.send("This path is not associated with any URL. Please make sure you have typed it in correctly!");
     return;
@@ -72,11 +73,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body);
+  console.log(req.body); //check what the req.body is
   const user = req.body.username;
-  console.log(req.cookies);
-  console.log(cookieParser.JSONCookie(req.cookies));
-  res.cookie('username', req.body.username);
+  res.cookie('username', user);
+  res.redirect('/urls');
+  
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
   res.redirect('/urls');
 });
 
