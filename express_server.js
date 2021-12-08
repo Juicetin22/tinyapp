@@ -59,7 +59,7 @@ app.post("/urls", (req, res) => {
   console.log(urlDatabase); //to check the list prior to adding new URL
   urlDatabase[shorten] = req.body.longURL;
   console.log(urlDatabase); //to check whether new URL got added to list
-  res.redirect(`/urls/${shorten}`);
+  res.redirect(`/urls/${shorten}`); 
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -85,6 +85,13 @@ app.post("/logout", (req, res) => {
   res.redirect('/urls');
 });
 
+//registration page
+app.get('/register', (req, res) => {
+  const templateVars = { username: req.cookies.username };
+  res.render('register', templateVars);
+});
+
+//server listening port
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
