@@ -50,6 +50,11 @@ app.get("/urls", (req, res) => {
 //new URL page
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.cookies['user_id']] }
+
+  if (!users[req.cookies.user_id]) {
+    res.redirect("/login");
+  }
+
   res.render("urls_new", templateVars);
 });
 
@@ -75,6 +80,7 @@ app.get('/login', (req, res) => {
   res.render('login', templateVars);
 });
 
+//editing longURL
 app.post("/urls/:shortURL", (req, res) => {
   console.log(req.body); //to check what is in reg body- hopefully longURL
   const shortURL = req.params.shortURL;
@@ -84,6 +90,11 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  
+  if (!users[req.cookies.user_id]) {
+    throw "Cannot add new URLs when not logged in";
+  }
+  
   console.log(req.body);  // Log the POST request body to the console
   let shorten = generateRandomString();
   console.log(urlDatabase); //to check the list prior to adding new URL
@@ -123,6 +134,7 @@ app.post("/logout", (req, res) => {
   console.log(users);
 });
 
+//register a new user
 app.post('/register', (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
