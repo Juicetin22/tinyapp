@@ -43,7 +43,7 @@ app.get("/hello", (req, res) => {
 //GET webpages //
 //list of URL page
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies['user_id']] };
   res.render("urls_index", templateVars);
 });
 
@@ -103,16 +103,24 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body); //check what the req.body is
-  const user = req.body.username;
-  res.cookie('username', user);
-  res.redirect('/urls');
-  
+  const loginUserEmail = req.body.email;
+  const loginUserPassword = req.body.password;
+
+  for (let userID in users) { 
+    if (findUserEmail(userID) === loginUserEmail) {
+      if (users[userID]['password'] === loginUserPassword) {
+        res.cookie('user_id', userID);
+        res.redirect('/urls');
+      } 
+    }
+  } 
+  throw '403 status code: Forbidden \n\nIncorrect email or password';
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
+  console.log(users);
 });
 
 app.post('/register', (req, res) => {
