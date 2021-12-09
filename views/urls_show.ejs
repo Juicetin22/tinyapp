@@ -8,20 +8,28 @@
 
 <body>
   <%- include('partials/_header') %>
-  <div class="card text-center">
-      <div class="card-header"></div>
-      <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= shortUrlObject['longURL'] %></h5>
-        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+    
+    <% if (!user) { %>
+      <div style="margin: 1em;"><h2>Please login to see your URL!</h2></div>
+    <% } else if (shortUrlObject["userID"] !== user["id"]) { %>
+      <div style="margin: 1em;"><h2>Current user is not authorized to see this URL</h2></div>
+    <% } else { %>
+      <div class="card text-center">
+        <div class="card-header"></div>
+        <div class="card-body">
+          <h5 class="card-title">TinyURL for: <%= shortUrlObject['longURL'] %></h5>
+          <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+        </div>
+        <div class="card-footer text-muted">
+          <h5 class="card-title">Edit</h5>
+          <p class="card-text"></p> New URL:
+          <form method="POST" action= "/urls/<%= shortURL %>">
+            <input type="text" name="longURL" value="<%= shortUrlObject['longURL'] %>">
+            <input type="submit" class="btn btn-primary" value="Update">
+          </form>
+        </div>
       </div>
-      <div class="card-footer text-muted">
-        <h5 class="card-title">Edit</h5>
-        <p class="card-text"></p> New URL:
-        <form method="POST" action= "/urls/<%= shortURL %>">
-          <input type="text" name="longURL" value="<%= shortUrlObject['longURL'] %>">
-          <input type="submit" class="btn btn-primary" value="Update">
-        </form>
-      </div>
+    <% } %>
   </div>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
