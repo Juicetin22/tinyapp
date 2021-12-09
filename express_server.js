@@ -11,8 +11,14 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "userRandomID"
+  }
 };
 
 const users = { 
@@ -61,7 +67,7 @@ app.get("/urls/new", (req, res) => {
 
 //specific URL page / edit URL page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies['user_id']] };
+  const templateVars = { shortURL: req.params.shortURL, shortUrlObject: urlDatabase[req.params.shortURL], user: users[req.cookies['user_id']] };
   if (!urlDatabase[req.params.shortURL]) {
     res.send("This path is not associated with any URL. Please make sure you have typed it in correctly!");
     return;
@@ -86,28 +92,45 @@ app.post("/urls/:shortURL", (req, res) => {
   console.log(req.body); //to check what is in reg body- hopefully longURL
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+
+  if (!users[req.cookies.user_id]) {
+    res.send("Cannot edit the URL when not logged in!");
+    return;
+  }
+
+  urlDatabase[shortURL]['longURL'] = longURL;
   res.redirect('/urls');
 });
 
 app.post("/urls", (req, res) => {
   
   if (!users[req.cookies.user_id]) {
-    res.send("Cannot add new URLs when not logged in");
+    res.send("Cannot add new URLs when not logged in!");
     return;
   }
   
   console.log(req.body);  // Log the POST request body to the console
-  let shorten = generateRandomString();
+  const shorten = generateRandomString();
+  const longURL = req.body.longURL
   console.log(urlDatabase); //to check the list prior to adding new URL
-  urlDatabase[shorten] = req.body.longURL;
+  
+  urlDatabase[shorten] = {
+    longURL,
+    userID: req.cookies.user_id
+  }
+
   console.log(urlDatabase); //to check whether new URL got added to list
   res.redirect(`/urls/${shorten}`); 
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  const shortUrlObject = urlDatabase[req.params.shortURL];
+
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send("This path is not associated with any URL. Please make sure you have typed it in correctly!");
+    return;
+  }
+  res.redirect(shortUrlObject['longURL']);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
