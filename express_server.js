@@ -50,8 +50,24 @@ app.get("/hello", (req, res) => {
 //GET webpages //
 //list of URL page
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies['user_id']] };
-  res.render("urls_index", templateVars);
+
+  const urlsForUserId = (list) => {
+    let listOfUrls = {};
+    for (let smallURL in list) {
+      if (list[smallURL]["userID"] === users[req.cookies.user_id]["id"]) {
+        listOfUrls[smallURL] = urlDatabase[smallURL]
+      }
+    }
+    return listOfUrls;
+  };
+  
+  if (users[req.cookies['user_id']]) {
+    const listOfUserUrls = urlsForUserId(urlDatabase);
+    const templateVars = { urls: listOfUserUrls, user: users[req.cookies['user_id']] };
+    res.render("urls_index", templateVars);
+    return;
+  }
+  res.render('urls_index', { user: users[req.cookies['user_id']] });
 });
 
 //new URL page
@@ -98,6 +114,11 @@ app.post("/urls/:shortURL", (req, res) => {
     return;
   }
 
+  if (users[req.cookies.user_id]["id"] !== urlDatabase[req.params.shortURL]["userID"]) {
+    res.send('Unauthorized to edit URL');
+    return;
+  }
+
   urlDatabase[shortURL]['longURL'] = longURL;
   res.redirect('/urls');
 });
@@ -134,6 +155,17 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  
+  if (!users[req.cookies.user_id]) {
+    res.send('Unauthorized to delete URL');
+    return;
+  }
+
+  if (users[req.cookies.user_id]["id"] !== urlDatabase[req.params.shortURL]["userID"]) {
+    res.send('Unauthorized to delete URL');
+    return;
+  }
+
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
@@ -146,12 +178,13 @@ app.post("/login", (req, res) => {
     if (findUserEmail(userID) === loginUserEmail) {
       if (users[userID]['password'] === loginUserPassword) {
         res.cookie('user_id', userID);
+        // console.log(userID);
         res.redirect('/urls');
         return;
       } 
     }
   } 
-  res.send('403 status code: Forbidden <br> <br> Incorrect email or password');
+  res.status(403).send('Incorrect email or password!');
 });
 
 app.post("/logout", (req, res) => {
@@ -160,7 +193,7 @@ app.post("/logout", (req, res) => {
   console.log(users); //check if user is still in users object list
 });
 
-//register a new user
+//register a new user, setting user cookie
 app.post('/register', (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
