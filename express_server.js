@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const { reset } = require("nodemon");
 const { generateRandomString, getUserByEmail, urlsForUser } = require("./helper");
 
@@ -26,12 +27,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple"
+    password: bcrypt.hashSync("purple", 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dish"
+    password: bcrypt.hashSync("dish", 10)
   }
 };
 
@@ -146,12 +147,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const user = users[req.cookies.user_id];
 
   if (!user) {
-    res.send('Unauthorized to delete URL');
+    res.status(401).send('Unauthorized to delete URL.');
     return;
   }
 
   if (user["id"] !== urlDatabase[req.params.shortURL]["userID"]) {
-    res.send('Unauthorized to delete URL');
+    res.status(403).send('Unauthorized to delete URL.');
     return;
   }
 
@@ -179,10 +180,13 @@ app.post("/login", (req, res) => {
 
   if (!checkForUser.email) {
     res.status(403).send('Unregistered email. Please register this email.');
+    return;
   }
 
-  if (checkForUser.password !== loginUserPassword) {
+  console.log(bcrypt.compareSync(loginUserPassword, checkForUser.password));
+  if (!bcrypt.compareSync(loginUserPassword, checkForUser.password)) {
     res.status(403).send('Password is incorrect. Please carefully re-enter your password.');
+    return;
   }
 
   res.cookie('user_id', checkForUser.id);
@@ -212,6 +216,7 @@ app.post('/register', (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const checkForUser = getUserByEmail(email, users);
 
   if (email === "" || password === "") {
@@ -227,7 +232,7 @@ app.post('/register', (req, res) => {
   users[id] = {
     id,
     email,
-    password
+    password: hashedPassword
   };
 
   console.log(users); //check to see if user is added to list
