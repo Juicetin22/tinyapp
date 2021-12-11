@@ -1,3 +1,4 @@
+//generates a random 6 character ID for the shortURL
 const generateRandomString = () => {
   let random = "";
   let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -8,6 +9,7 @@ const generateRandomString = () => {
   return random;
 };
 
+//returns a user's info by using their email
 const getUserByEmail = (email, database) => {
   const user = {};
 
@@ -21,6 +23,7 @@ const getUserByEmail = (email, database) => {
   return user;
 };
 
+//grabs a list of URLs from the database specific to each user using their id
 const urlsForUser = (id, database) => {
   const listOfUrls = {};
   
