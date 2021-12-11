@@ -3,16 +3,18 @@
 <head>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>URL - TinyApp Example</title>
+  <title>URL - TinyApp</title>
 </head>
 
 <body>
   <%- include('partials/_header') %>
-    
-    <% if (!user) { %>
-      <div style="margin: 1em;"><h2>Please login to see this URL!</h2></div>
+
+    <% if (!shortUrlInfo) { %>
+      <div style="margin: 1em;"><h3>This URL is not associated with any page. Please make sure you have typed it in correctly!</h3></div>
+    <% } else if (!user) { %> 
+      <div style="margin: 1em;"><h3>Please login to see this URL!</h3></div>
     <% } else if (shortUrlInfo["userID"] !== user["id"]) { %>
-      <div style="margin: 1em;"><h2>Current user is not authorized to see this URL</h2></div>
+      <div style="margin: 1em;"><h3>Cannot access this URL. Please type in a URL associated with your account. </h3></div>
     <% } else { %>
       <div class="card text-center">
         <div class="card-header"></div>
