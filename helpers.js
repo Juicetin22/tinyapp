@@ -23,13 +23,13 @@ const getUserByEmail = (email, database) => {
   return user;
 };
 
-//grabs a list of URLs from the database specific to each user using their id
+//returns a list of URLs from the database specific to the user using their id
 const urlsForUser = (id, database) => {
   const listOfUrls = {};
   
   for (let shortURL in database) {
     if (database[shortURL]['userID'] === id) {
-      listOfUrls[shortURL] = database[shortURL]
+      listOfUrls[shortURL] = database[shortURL];
     }
   }
   return listOfUrls;
@@ -39,4 +39,4 @@ module.exports = {
   generateRandomString,
   getUserByEmail,
   urlsForUser
-}
+};

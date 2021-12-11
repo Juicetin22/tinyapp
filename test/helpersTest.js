@@ -4,13 +4,13 @@ const { getUserByEmail, urlsForUser } = require('../helpers.js');
 
 const testUsers = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple"
   },
   "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dish"
   }
 };
@@ -32,7 +32,7 @@ const testUrlDatabase = {
 
 describe('getUserByEmail', function() {
   it('should return a user with valid email', function() {
-    const user = getUserByEmail("user@example.com", testUsers)
+    const user = getUserByEmail("user@example.com", testUsers);
     const expectedUserID = "userRandomID";
     assert.equal(user.id, expectedUserID);
   });
@@ -53,7 +53,7 @@ describe('getUserByEmail', function() {
 describe('urlsForUser', function() {
   it('should return a list of URLs for a user as an object given their id', function() {
     const listOfUrls = urlsForUser('userRandomID', testUrlDatabase);
-    const expectedList = { 
+    const expectedList = {
       "b2xVn2": {
         longURL: "http://www.lighthouselabs.ca",
         userID: "userRandomID"

@@ -9,6 +9,7 @@
 <body>
   <%- include('partials/_header') %>
 
+    <!-- page will be different depending on whether user is logged in or if the user is not the correct one -->
     <% if (!shortUrlInfo) { %>
       <div style="margin: 1em;"><h3>This URL is not associated with any page. Please make sure you have typed it in correctly!</h3></div>
     <% } else if (!user) { %> 
